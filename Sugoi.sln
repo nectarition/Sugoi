@@ -5,8 +5,6 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sugoi.Functions", "src\Sugoi.Functions\Sugoi.Functions.csproj", "{16677762-4210-42D4-AC3F-E03B2F684E07}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{A8191AFE-A22C-4FE1-A6A2-94E380975DB1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{16677762-4210-42D4-AC3F-E03B2F684E07} = {A8191AFE-A22C-4FE1-A6A2-94E380975DB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAD6C09F-917E-4F98-8560-D547D76E6BB1}

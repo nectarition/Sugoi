@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sugoi.Functions", "Sugoi.Functions\Sugoi.Functions.csproj", "{B36EF9BC-EDF8-4E87-A7C5-072E874E8E20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sugoi.Functions", "src\Sugoi.Functions\Sugoi.Functions.csproj", "{16677762-4210-42D4-AC3F-E03B2F684E07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{A8191AFE-A22C-4FE1-A6A2-94E380975DB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +13,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B36EF9BC-EDF8-4E87-A7C5-072E874E8E20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B36EF9BC-EDF8-4E87-A7C5-072E874E8E20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B36EF9BC-EDF8-4E87-A7C5-072E874E8E20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B36EF9BC-EDF8-4E87-A7C5-072E874E8E20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16677762-4210-42D4-AC3F-E03B2F684E07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16677762-4210-42D4-AC3F-E03B2F684E07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16677762-4210-42D4-AC3F-E03B2F684E07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16677762-4210-42D4-AC3F-E03B2F684E07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{16677762-4210-42D4-AC3F-E03B2F684E07} = {A8191AFE-A22C-4FE1-A6A2-94E380975DB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAD6C09F-917E-4F98-8560-D547D76E6BB1}

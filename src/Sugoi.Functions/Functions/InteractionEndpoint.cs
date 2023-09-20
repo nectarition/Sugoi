@@ -1,15 +1,12 @@
-using System.ComponentModel;
 using System.Net;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSec.Cryptography;
 using Sugoi.Functions.Configurations;
-using Sugoi.Functions.Models;
+using Sugoi.Functions.Models.Interactions;
 using static Sugoi.Functions.Enumerations;
 
 namespace Sugoi.Functions.Functions;
@@ -49,17 +46,40 @@ public class InteractionEndpoint
 
         if (interactionObject.InteractionType == InteractionTypes.Ping)
         {
-            Logger.LogInformation("Pong!");
-            return await PingAsync(req);
+            return await PongAsync(req);
         }
 
-        var response = req.CreateResponse(HttpStatusCode.OK);
+        Logger.LogInformation($"InteractionType: {interactionObject.InteractionType}");
+        Logger.LogInformation($"CommandId: {interactionObject.Data?.Id ?? "<null>"}");
+        Logger.LogInformation($"CommandName: {interactionObject.Data?.Name ?? "<null>" }");
 
-        response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-        response.WriteString("Welcome to Azure Functions!");
+        if (interactionObject.Data == null
+            || !interactionObject.Data.Name.Contains("sugoi")
+            || interactionObject.Data.Options.Length == 0)
+        {
+            return await PongAsync(req);
+        }
 
-        Logger.LogInformation("ä÷êîÇÃé¿çsÇ…ê¨å˜ÇµÇ‹ÇµÇΩÅB");
-        return response;
+        var option = interactionObject.Data.Options.FirstOrDefault();
+        if (option == null)
+        {
+            return await PongAsync(req);
+        }
+
+        switch (option.Name)
+        {
+            case "ping":
+                return await HelloWorldAsync(req);
+
+            case "sugoi":
+                return await SugoiAsync(req);
+
+            case "jomei":
+                return await JomeiAsync(req);
+
+            default:
+                return await PongAsync(req);
+        }
     }
 
     private async Task VerifyRequestAsync(HttpRequestData req)
@@ -105,16 +125,57 @@ public class InteractionEndpoint
         req.Body.Seek(0, SeekOrigin.Begin);
     }
 
-    private static async Task<HttpResponseData> PingAsync(HttpRequestData req)
+    private async Task<HttpResponseData> ResponseCoreAsync(HttpRequestData req, InteractionResult result)
     {
-        var res = req.CreateResponse(HttpStatusCode.OK);
-        var result = new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.Pong
-        };
-
+        var res = req.CreateResponse();
         await res.WriteAsJsonAsync(result);
 
         return res;
+    }
+
+    private async Task<HttpResponseData> PongAsync(HttpRequestData req)
+    {
+        Logger.LogInformation("Pong!");
+
+        return await ResponseCoreAsync(req, new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.Pong
+        });
+    }
+
+    private async Task<HttpResponseData> HelloWorldAsync(HttpRequestData req)
+    {
+        return await ResponseCoreAsync(req, new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new InteractionResultData
+            {
+                Content = "pong!"
+            }
+        });
+    }
+
+    private async Task<HttpResponseData> SugoiAsync(HttpRequestData req)
+    {
+        return await ResponseCoreAsync(req, new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new InteractionResultData
+            {
+                Content = ":woozy_face:"
+            }
+        });
+    }
+
+    private async Task<HttpResponseData> JomeiAsync(HttpRequestData req)
+    {
+        return await ResponseCoreAsync(req, new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new InteractionResultData
+            {
+                Content = ":weary:"
+            }
+        });
     }
 }

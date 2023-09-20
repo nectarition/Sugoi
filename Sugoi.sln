@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sugoi.Functions", "src\Sugoi.Functions\Sugoi.Functions.csproj", "{16677762-4210-42D4-AC3F-E03B2F684E07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sugoi.Tool", "src\Sugoi.Tool\Sugoi.Tool.csproj", "{16B53B85-66FA-45AF-B0F8-6F02BF41A6BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{16677762-4210-42D4-AC3F-E03B2F684E07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16677762-4210-42D4-AC3F-E03B2F684E07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16677762-4210-42D4-AC3F-E03B2F684E07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B53B85-66FA-45AF-B0F8-6F02BF41A6BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B53B85-66FA-45AF-B0F8-6F02BF41A6BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B53B85-66FA-45AF-B0F8-6F02BF41A6BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B53B85-66FA-45AF-B0F8-6F02BF41A6BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

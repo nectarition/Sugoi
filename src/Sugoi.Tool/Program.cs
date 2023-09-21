@@ -105,18 +105,6 @@ internal class Program
                 },
                 new()
                 {
-                    ["name"] = "sugoi",
-                    ["description"] = "すごい",
-                    ["type"] = 1
-                },
-                new()
-                {
-                    ["name"] = "jomei",
-                    ["description"] = "除名",
-                    ["type"] = 1
-                },
-                new()
-                {
                     ["name"] = "dappun",
                     ["description"] = "dappun",
                     ["type"] = 1

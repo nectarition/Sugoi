@@ -10,8 +10,6 @@ namespace Sugoi.Functions.Services;
 public interface IHelloService
 {
     Task<InteractionResult> HelloWorldAsync(InteractionPayload payload);
-    Task<InteractionResult> SugoiAsync(InteractionPayload payload);
-    Task<InteractionResult> JomeiAsync(InteractionPayload payload);
     Task<InteractionResult> DappunAsync(InteractionPayload payload);
 }
 
@@ -38,31 +36,7 @@ public class HelloService : IHelloService
             InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
             Data = new InteractionResultData
             {
-                Content = "pong!"
-            }
-        };
-    }
-
-    public async Task<InteractionResult> SugoiAsync(InteractionPayload payload)
-    {
-        return new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
-            Data = new InteractionResultData
-            {
-                Content = ":woozy_face:"
-            }
-        };
-    }
-
-    public async Task<InteractionResult> JomeiAsync(InteractionPayload payload)
-    {
-        return new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
-            Data = new InteractionResultData
-            {
-                Content = ":weary:"
+                Content = ":thinking:"
             }
         };
     }

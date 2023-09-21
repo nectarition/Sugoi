@@ -86,8 +86,6 @@ public class InteractionEndpoint
         var result = option.Name switch
         {
             "ping" => await HelloService.HelloWorldAsync(interactionObject),
-            "sugoi" => await HelloService.SugoiAsync(interactionObject),
-            "jomei" => await HelloService.JomeiAsync(interactionObject),
             "get-user" => await MessageService.GetUserByIdAsync(interactionObject),
             "dappun" => await HelloService.DappunAsync(interactionObject),
             _ => throw new ArgumentOutOfRangeException(nameof(option))

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using NSec.Cryptography;
 using Sugoi.Functions.Configurations;
 using Sugoi.Functions.Models.Interactions;
+using Sugoi.Functions.Services;
 using static Sugoi.Functions.Enumerations;
 
 namespace Sugoi.Functions.Functions;
@@ -15,13 +16,16 @@ public class InteractionEndpoint
 {
     private ILogger Logger { get; }
     private SugoiConfiguration SugoiConfiguration { get; }
+    private IHelloService HelloService { get; }
 
     public InteractionEndpoint(
         ILoggerFactory loggerFactory,
-        IOptions<SugoiConfiguration> sugoiConfigurationOptions)
+        IOptions<SugoiConfiguration> sugoiConfigurationOptions,
+        IHelloService helloService)
     {
         Logger = loggerFactory.CreateLogger<InteractionEndpoint>();
         SugoiConfiguration = sugoiConfigurationOptions.Value;
+        HelloService = helloService;
     }
 
     [Function(nameof(InteractionRoot))]
@@ -46,7 +50,7 @@ public class InteractionEndpoint
 
         if (interactionObject.InteractionType == InteractionTypes.Ping)
         {
-            return await PongAsync(req);
+            return await HelloService.PongAsync(req);
         }
 
         Logger.LogInformation($"InteractionType: {interactionObject.InteractionType}");
@@ -57,28 +61,28 @@ public class InteractionEndpoint
             || !interactionObject.Data.Name.Contains("sugoi")
             || interactionObject.Data.Options.Length == 0)
         {
-            return await PongAsync(req);
+            return await HelloService.PongAsync(req);
         }
 
         var option = interactionObject.Data.Options.FirstOrDefault();
         if (option == null)
         {
-            return await PongAsync(req);
+            return await HelloService.PongAsync(req);
         }
 
         switch (option.Name)
         {
             case "ping":
-                return await HelloWorldAsync(req);
+                return await HelloService.HelloWorldAsync(req);
 
             case "sugoi":
-                return await SugoiAsync(req);
+                return await HelloService.SugoiAsync(req);
 
             case "jomei":
-                return await JomeiAsync(req);
+                return await HelloService.JomeiAsync(req);
 
             default:
-                return await PongAsync(req);
+                return await HelloService.PongAsync(req);
         }
     }
 
@@ -123,59 +127,5 @@ public class InteractionEndpoint
         }
 
         req.Body.Seek(0, SeekOrigin.Begin);
-    }
-
-    private async Task<HttpResponseData> ResponseCoreAsync(HttpRequestData req, InteractionResult result)
-    {
-        var res = req.CreateResponse();
-        await res.WriteAsJsonAsync(result);
-
-        return res;
-    }
-
-    private async Task<HttpResponseData> PongAsync(HttpRequestData req)
-    {
-        Logger.LogInformation("Pong!");
-
-        return await ResponseCoreAsync(req, new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.Pong
-        });
-    }
-
-    private async Task<HttpResponseData> HelloWorldAsync(HttpRequestData req)
-    {
-        return await ResponseCoreAsync(req, new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
-            Data = new InteractionResultData
-            {
-                Content = "pong!"
-            }
-        });
-    }
-
-    private async Task<HttpResponseData> SugoiAsync(HttpRequestData req)
-    {
-        return await ResponseCoreAsync(req, new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
-            Data = new InteractionResultData
-            {
-                Content = ":woozy_face:"
-            }
-        });
-    }
-
-    private async Task<HttpResponseData> JomeiAsync(HttpRequestData req)
-    {
-        return await ResponseCoreAsync(req, new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
-            Data = new InteractionResultData
-            {
-                Content = ":weary:"
-            }
-        });
     }
 }

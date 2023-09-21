@@ -3,73 +3,79 @@ using Microsoft.Extensions.Logging;
 using static Sugoi.Functions.Enumerations;
 using Sugoi.Functions.Models.Interactions;
 using Sugoi.Functions.Services.Common;
+using Microsoft.Azure.Cosmos;
 
 namespace Sugoi.Functions.Services;
 
 public interface IHelloService
 {
-    Task<HttpResponseData> PongAsync(HttpRequestData req);
-    Task<HttpResponseData> HelloWorldAsync(HttpRequestData req);
-    Task<HttpResponseData> SugoiAsync(HttpRequestData req);
-    Task<HttpResponseData> JomeiAsync(HttpRequestData req);
+    Task<InteractionResult> HelloWorldAsync(InteractionPayload payload);
+    Task<InteractionResult> SugoiAsync(InteractionPayload payload);
+    Task<InteractionResult> JomeiAsync(InteractionPayload payload);
+    Task<InteractionResult> DappunAsync(InteractionPayload payload);
 }
 
 public class HelloService : IHelloService
 {
     private ILogger Logger { get; }
     private IResponseService ResponseService { get; }
+    private CosmosClient CosmosClient { get; } 
 
     public HelloService(
         IResponseService responseService,
+        CosmosClient cosmosClient,
         ILoggerFactory loggerFactory)
     {
         ResponseService = responseService;
+        CosmosClient = cosmosClient;
         Logger = loggerFactory.CreateLogger<HelloService>();
     }
 
-    public async Task<HttpResponseData> PongAsync(HttpRequestData req)
+    public async Task<InteractionResult> HelloWorldAsync(InteractionPayload payload)
     {
-        Logger.LogInformation("Pong!");
-
-        return await ResponseService.ResponseCoreAsync(req, new InteractionResult
-        {
-            InteractionResponseType = InteractionResponseTypes.Pong
-        });
-    }
-
-    public async Task<HttpResponseData> HelloWorldAsync(HttpRequestData req)
-    {
-        return await ResponseService.ResponseCoreAsync(req, new InteractionResult
+        return new InteractionResult
         {
             InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
             Data = new InteractionResultData
             {
                 Content = "pong!"
             }
-        });
+        };
     }
 
-    public async Task<HttpResponseData> SugoiAsync(HttpRequestData req)
+    public async Task<InteractionResult> SugoiAsync(InteractionPayload payload)
     {
-        return await ResponseService.ResponseCoreAsync(req, new InteractionResult
+        return new InteractionResult
         {
             InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
             Data = new InteractionResultData
             {
                 Content = ":woozy_face:"
             }
-        });
+        };
     }
 
-    public async Task<HttpResponseData> JomeiAsync(HttpRequestData req)
+    public async Task<InteractionResult> JomeiAsync(InteractionPayload payload)
     {
-        return await ResponseService.ResponseCoreAsync(req, new InteractionResult
+        return new InteractionResult
         {
             InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
             Data = new InteractionResultData
             {
                 Content = ":weary:"
             }
-        });
+        };
+    }
+
+    public async Task<InteractionResult> DappunAsync(InteractionPayload payload)
+    {
+        return new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new InteractionResultData
+            {
+                Content = "あああああああああああああああああああああああああああああああ！！！！！！！！！！！（ﾌﾞﾘﾌﾞﾘﾌﾞﾘﾌﾞﾘｭﾘｭﾘｭﾘｭﾘｭﾘｭ！！！！！！ﾌﾞﾂﾁﾁﾌﾞﾌﾞﾌﾞﾁﾁﾁﾁﾌﾞﾘﾘｲﾘﾌﾞﾌﾞﾌﾞﾌﾞｩｩｩｩｯｯｯ！！！！！！！）"
+            }
+        };
     }
 }

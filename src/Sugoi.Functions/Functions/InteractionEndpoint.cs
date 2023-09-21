@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using NSec.Cryptography;
 using Sugoi.Functions.Configurations;
 using Sugoi.Functions.Models.Interactions;
 using Sugoi.Functions.Services;
+using Sugoi.Functions.Services.Common;
 using static Sugoi.Functions.Enumerations;
 
 namespace Sugoi.Functions.Functions;
@@ -16,16 +18,22 @@ public class InteractionEndpoint
 {
     private ILogger Logger { get; }
     private SugoiConfiguration SugoiConfiguration { get; }
+    private IResponseService ResponseService { get; }
     private IHelloService HelloService { get; }
+    private IMessageService MessageService { get; }
 
     public InteractionEndpoint(
         ILoggerFactory loggerFactory,
         IOptions<SugoiConfiguration> sugoiConfigurationOptions,
-        IHelloService helloService)
+        IResponseService responseService,
+        IHelloService helloService,
+        IMessageService messageService)
     {
         Logger = loggerFactory.CreateLogger<InteractionEndpoint>();
         SugoiConfiguration = sugoiConfigurationOptions.Value;
+        ResponseService = responseService;
         HelloService = helloService;
+        MessageService = messageService;
     }
 
     [Function(nameof(InteractionRoot))]
@@ -48,9 +56,12 @@ public class InteractionEndpoint
             throw new NullReferenceException(nameof(interactionObject));
         }
 
+        Logger.LogInformation($"Payload: {JsonSerializer.Serialize(interactionObject)}");
+
         if (interactionObject.InteractionType == InteractionTypes.Ping)
         {
-            return await HelloService.PongAsync(req);
+            var noOpResult = await MessageService.PongAsync(interactionObject);
+            return await ResponseService.ResponseCoreAsync(req, noOpResult);
         }
 
         Logger.LogInformation($"InteractionType: {interactionObject.InteractionType}");
@@ -61,29 +72,28 @@ public class InteractionEndpoint
             || !interactionObject.Data.Name.Contains("sugoi")
             || interactionObject.Data.Options.Length == 0)
         {
-            return await HelloService.PongAsync(req);
+            var noOpResult = await MessageService.PongAsync(interactionObject);
+            return await ResponseService.ResponseCoreAsync(req, noOpResult);
         }
 
         var option = interactionObject.Data.Options.FirstOrDefault();
         if (option == null)
         {
-            return await HelloService.PongAsync(req);
+            var noOpResult = await MessageService.PongAsync(interactionObject);
+            return await ResponseService.ResponseCoreAsync(req, noOpResult);
         }
 
-        switch (option.Name)
+        var result = option.Name switch
         {
-            case "ping":
-                return await HelloService.HelloWorldAsync(req);
+            "ping" => await HelloService.HelloWorldAsync(interactionObject),
+            "sugoi" => await HelloService.SugoiAsync(interactionObject),
+            "jomei" => await HelloService.JomeiAsync(interactionObject),
+            "get-user" => await MessageService.GetUserByIdAsync(interactionObject),
+            "dappun" => await HelloService.DappunAsync(interactionObject),
+            _ => throw new ArgumentOutOfRangeException(nameof(option))
+        };
 
-            case "sugoi":
-                return await HelloService.SugoiAsync(req);
-
-            case "jomei":
-                return await HelloService.JomeiAsync(req);
-
-            default:
-                return await HelloService.PongAsync(req);
-        }
+        return await ResponseService.ResponseCoreAsync(req, result);
     }
 
     private async Task VerifyRequestAsync(HttpRequestData req)

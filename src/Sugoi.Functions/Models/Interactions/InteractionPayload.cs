@@ -41,4 +41,19 @@ public class InteractionDataOption
 
     [JsonPropertyName("type")]
     public ApplicationCommandOptionTypes ApplicationCommandOptionType { get; set; }
+
+    [JsonPropertyName("options")]
+    public InteractionDataOptionItem[] Items { get; set; } = Array.Empty<InteractionDataOptionItem>();
+}
+
+public class InteractionDataOptionItem
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+    
+    [JsonPropertyName("type")]
+    public ApplicationCommandOptionTypes ApplicationCommandOptionType { get; set; }
+
+    [JsonPropertyName("value")]
+    public string Value { get; set; } = string.Empty;
 }

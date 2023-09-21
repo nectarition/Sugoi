@@ -1,8 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,19 +38,16 @@ void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     services
         .Configure<SugoiConfiguration>(context.Configuration.GetSection(SugoiConfiguration.Name));
 
-    services.AddSingleton(resolver =>
-    {
-        var configuration = resolver
-            .GetRequiredService<IConfiguration>()
-            .GetSection(SugoiConfiguration.Name)
-            .Get<SugoiConfiguration>();
+    services
+        .AddSingleton(resolver =>
+        {
+            var connectionString = resolver
+                .GetRequiredService<IConfiguration>()
+                .GetConnectionString("CosmosDbConnectionString");
 
-        var client = new DiscordSocketClient();
-        client.LoginAsync(TokenType.Bot, configuration.Secrets.BotToken);
-        client.StartAsync();
-
-        return client;
-    });
+            var client = new CosmosClient(connectionString);
+            return client;
+        });
 }
 
 internal class ThisAssemblyReference { }

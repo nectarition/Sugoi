@@ -114,6 +114,28 @@ internal class Program
                     ["name"] = "jomei",
                     ["description"] = "除名",
                     ["type"] = 1
+                },
+                new()
+                {
+                    ["name"] = "dappun",
+                    ["description"] = "dappun",
+                    ["type"] = 1
+                },
+                new()
+                {
+                    ["name"] = "get-user",
+                    ["description"] = "ユーザ情報を取得します。",
+                    ["type"] = 1,
+                    ["options"] = new Dictionary<string, object>[]
+                    {
+                        new()
+                        {
+                            ["name"] = "user",
+                            ["description"] = "取得したいユーザ",
+                            ["type"] = 6,
+                            ["required"] = true
+                        }
+                    }
                 }
             }
         };

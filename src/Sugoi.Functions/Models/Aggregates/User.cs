@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Sugoi.Functions.Models.Aggregates;
 
@@ -15,4 +16,10 @@ public class User
 
     [JsonProperty("postedAt")]
     public DateTime PostedAt { get; set; }
+
+    [JsonPropertyName("lastMessageChannelId")]
+    public string LastMessageChannelId { get; set; } = string.Empty;
+
+    [JsonPropertyName("lastMessageId")]
+    public string LastMessageId { get; set; } = string.Empty;
 }

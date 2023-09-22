@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Sugoi.Functions.Configurations;
 using Sugoi.Functions.Helpers;
 using Sugoi.Functions.Models.Interactions;
 using Sugoi.Functions.Services.Users;
@@ -18,13 +20,16 @@ public interface IMessageService
 
 public class MessageService : IMessageService
 {
+    private SugoiConfiguration SugoiConfiguration { get; }
     private ILogger Logger { get; }
     private IUserService UserService { get; }
 
     public MessageService(
+        IOptions<SugoiConfiguration> configuration,
         ILoggerFactory loggerFactory,
         IUserService userService)
     {
+        SugoiConfiguration = configuration.Value;
         Logger = loggerFactory.CreateLogger<MessageService>();
         UserService = userService;
     }
@@ -190,7 +195,7 @@ public class MessageService : IMessageService
 
         var userMessages = users
             .OrderByDescending(u => u.PostedAt)
-            .Select(UserHelper.FormatSimpleUser);
+            .Select(user => UserHelper.FormatSimpleUser(SugoiConfiguration.Aggregates.GuildId, user));
         var userMessage = string.Join('\n', userMessages);
 
         return new InteractionResult

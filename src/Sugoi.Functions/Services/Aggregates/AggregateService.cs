@@ -72,7 +72,9 @@ public class AggregateService : IAggregateService
                         Id = lastPostMessage.User.Id,
                         UserId = lastPostMessage.User.Id,
                         UserName = lastPostMessage.User.GlobalName,
-                        PostedAt = lastPostMessage.CreatedAt
+                        PostedAt = lastPostMessage.CreatedAt,
+                        LastMessageId = lastPostMessage.Id,
+                        LastMessageChannelId = lastPostMessage.ChannelId
                     };
                 })
             .ToArray();
@@ -86,7 +88,11 @@ public class AggregateService : IAggregateService
                 continue;
             }
 
-            await UserService.SetPostedAtAsync(user.Id, user.PostedAt);
+            await UserService.SetLastMessageAsync(
+                user.Id,
+                user.LastMessageId,
+                user.LastMessageChannelId,
+                user.PostedAt);
         }
 
         foreach (var channel in selectedChannels)

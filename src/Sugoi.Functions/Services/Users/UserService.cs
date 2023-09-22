@@ -9,7 +9,7 @@ public interface IUserService
     Task<Models.Aggregates.User[]> GetUsersAsync();
 
     Task SetUserNameAsync(string userId, string userName);
-    Task SetPostedAtAsync(string userId, DateTime postedAt);
+    Task SetLastMessageAsync(string userId, string lastMessageId, string lastMessageChannelId, DateTime postedAt);
 
     Task CreateUserAsync(string userId);
     Task CreateUserAsync(Models.Aggregates.User user);
@@ -67,12 +67,14 @@ public class UserService : IUserService
             });
     }
 
-    public async Task SetPostedAtAsync(string userId, DateTime postedAt)
+    public async Task SetLastMessageAsync(string userId, string lastMessageId, string lastMessageChannelId, DateTime postedAt)
     {
         await CosmosClient.GetContainer("SugoiCosmosDb", "Users")
             .PatchItemAsync<Models.Aggregates.User>(userId, new PartitionKey(userId), new[]
             {
-                PatchOperation.Set($"/postedAt", postedAt)
+                PatchOperation.Set("/lastMessageId", lastMessageId),
+                PatchOperation.Set("/lastMessageChannelId", lastMessageChannelId),
+                PatchOperation.Set("/postedAt", postedAt)
             });
     }
 

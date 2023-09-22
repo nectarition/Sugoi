@@ -2,6 +2,9 @@
 
 public class UserHelper
 {
+
+    private const string DiscordMessageURL = "https://discord.com/channels/{0}/{1}/{2}";
+
     public static string FormatUser(Models.Aggregates.User user)
     {
         var now = DateTime.Now;
@@ -13,12 +16,15 @@ public class UserHelper
             + $"最終投稿日: {user.PostedAt} ({formatedSpan})";
     }
 
-    public static string FormatSimpleUser(Models.Aggregates.User user)
+    public static string FormatSimpleUser(string guildId, Models.Aggregates.User user)
     {
         var now = DateTime.Now;
         var span = now - user.PostedAt;
         var formatedSpan = TimeHelper.FormatTimeSpan(span);
 
-        return $"**{user.UserName ?? "誰？"}** {formatedSpan} || {user.Id} / {user.PostedAt:yyyy/MM/dd HH:mm:ss} ||";
+        var discordMessageUrl = string.Format(DiscordMessageURL, guildId, user.LastMessageChannelId, user.LastMessageId);
+
+        return $"**{user.UserName ?? "誰？"}**\n"
+            + $"… {formatedSpan} {discordMessageUrl}";
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sugoi.Functions.Helpers;
 using Sugoi.Functions.Models.Interactions;
 using Sugoi.Functions.Services.Users;
 using static Sugoi.Functions.Enumerations;
@@ -7,8 +8,12 @@ namespace Sugoi.Functions.Services.Common;
 
 public interface IMessageService
 {
-    Task<InteractionResult> PongAsync(InteractionPayload payload);
-    Task<InteractionResult> GetUserByIdAsync(InteractionPayload payload);
+    Task<InteractionResult> PongAsync();
+    Task<InteractionResult> GetUserByIdAsync(InteractionDataOption option);
+    Task<InteractionResult> SetUserNameAsync(InteractionDataOption option);
+    Task<InteractionResult> CreateUserAsync(InteractionDataOption option);
+    Task<InteractionResult> DeleteUserAsync(InteractionDataOption option);
+    Task<InteractionResult> GetAggregateResult();
 }
 
 public class MessageService : IMessageService
@@ -24,7 +29,7 @@ public class MessageService : IMessageService
         UserService = userService;
     }
 
-    public async Task<InteractionResult> PongAsync(InteractionPayload payload)
+    public async Task<InteractionResult> PongAsync()
     {
         Logger.LogInformation("Pong!");
 
@@ -34,11 +39,9 @@ public class MessageService : IMessageService
         };
     }
 
-    public async Task<InteractionResult> GetUserByIdAsync(InteractionPayload payload)
+    public async Task<InteractionResult> GetUserByIdAsync(InteractionDataOption option)
     {
-        var option = payload.Data?.Options.First();
-        var userId = option?.Items.First(i => i.Name == "user").Value;
-        Logger.LogInformation($"userId: {userId}");
+        var userId = option.Items.First(i => i.Name == "user")?.Value;
         if (userId == null)
         {
             return new InteractionResult
@@ -46,7 +49,7 @@ public class MessageService : IMessageService
                 InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
                 Data = new()
                 {
-                    Content = "エラーが発生しました。"
+                    Content = "ユーザIDを取得できませんでした。"
                 }
             };
         }
@@ -69,7 +72,133 @@ public class MessageService : IMessageService
             InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
             Data = new()
             {
-                Content = $"ユーザId: {user.UserId}"
+                Content = Helpers.UserHelper.FormatUser(user)
+            }
+        };
+    }
+
+    public async Task<InteractionResult> SetUserNameAsync(InteractionDataOption option)
+    {
+        var userId = option.Items.FirstOrDefault(i => i.Name == "user")?.Value;
+        if (userId == null)
+        {
+            return new InteractionResult
+            {
+                InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+                Data = new()
+                {
+                    Content = "ユーザIDを取得できませんでした。"
+                }
+            };
+        }
+
+        var userName = option.Items.FirstOrDefault(i => i.Name == "name")?.Value;
+        if (userName == null)
+        {
+            return new InteractionResult
+            {
+                InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+                Data = new()
+                {
+                    Content = "ユーザ名を取得できませんでした。"
+                }
+            };
+        }
+
+        await UserService.SetUserNameAsync(userId, userName);
+
+        return new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new()
+            {
+                Content = $"表示名を `{userName}` に変更しました。"
+            }
+        };
+    }
+
+    public async Task<InteractionResult> CreateUserAsync(InteractionDataOption option)
+    {
+        var userId = option.Items.FirstOrDefault(i => i.Name == "user")?.Value;
+        if (userId == null)
+        {
+            return new InteractionResult
+            {
+                InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+                Data = new()
+                {
+                    Content = "ユーザIDを取得できませんでした。"
+                }
+            };
+        }
+
+        await UserService.CreateUserAsync(userId);
+
+        return new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new()
+            {
+                Content = "集計用ユーザ情報を作成しました。"
+            }
+        };
+    }
+
+    public async Task<InteractionResult> DeleteUserAsync(InteractionDataOption option)
+    {
+        var userId = option.Items.FirstOrDefault(i => i.Name == "user")?.Value;
+        if (userId == null)
+        {
+            return new InteractionResult
+            {
+                InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+                Data = new()
+                {
+                    Content = "ユーザIDを取得できませんでした。"
+                }
+            };
+        }
+
+        await UserService.DeleteUserAsync(userId);
+
+        return new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new()
+            {
+                Content = "集計用ユーザ情報を削除しました。"
+            }
+        };
+    }
+
+    public async Task<InteractionResult> GetAggregateResult()
+    {
+        var users = await UserService.GetUsersAsync();
+        if (!users.Any())
+        {
+            return new InteractionResult
+            {
+                InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+                Data = new()
+                {
+                    Content = "集計情報を取得できませんでした。"
+                }
+            };
+        }
+
+        var prefix = "----- 最新の集計情報\n";
+
+        var userMessages = users
+            .OrderByDescending(u => u.PostedAt)
+            .Select(UserHelper.FormatSimpleUser);
+        var userMessage = string.Join('\n', userMessages);
+
+        return new InteractionResult
+        {
+            InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
+            Data = new()
+            {
+                Content = $"{prefix}{userMessage}"
             }
         };
     }

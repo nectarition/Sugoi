@@ -1,6 +1,3 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -8,8 +5,11 @@ using Microsoft.Extensions.Options;
 using NSec.Cryptography;
 using Sugoi.Functions.Configurations;
 using Sugoi.Functions.Models.Interactions;
-using Sugoi.Functions.Services;
+using Sugoi.Functions.Services.Aggregates;
 using Sugoi.Functions.Services.Common;
+using System.Net;
+using System.Text;
+using System.Text.Json;
 using static Sugoi.Functions.Enumerations;
 
 namespace Sugoi.Functions.Functions;
@@ -21,19 +21,22 @@ public class InteractionEndpoint
     private IResponseService ResponseService { get; }
     private IHelloService HelloService { get; }
     private IMessageService MessageService { get; }
+    private IAggregateService AggregateService { get; }
 
     public InteractionEndpoint(
         ILoggerFactory loggerFactory,
         IOptions<SugoiConfiguration> sugoiConfigurationOptions,
         IResponseService responseService,
         IHelloService helloService,
-        IMessageService messageService)
+        IMessageService messageService,
+        IAggregateService aggregateService)
     {
         Logger = loggerFactory.CreateLogger<InteractionEndpoint>();
         SugoiConfiguration = sugoiConfigurationOptions.Value;
         ResponseService = responseService;
         HelloService = helloService;
         MessageService = messageService;
+        AggregateService = aggregateService;
     }
 
     [Function(nameof(InteractionRoot))]
@@ -52,7 +55,8 @@ public class InteractionEndpoint
         }
 
         var interactionObject = await req.ReadFromJsonAsync<InteractionPayload>();
-        if (interactionObject == null) {
+        if (interactionObject == null)
+        {
             throw new NullReferenceException(nameof(interactionObject));
         }
 
@@ -60,34 +64,38 @@ public class InteractionEndpoint
 
         if (interactionObject.InteractionType == InteractionTypes.Ping)
         {
-            var noOpResult = await MessageService.PongAsync(interactionObject);
+            var noOpResult = await MessageService.PongAsync();
             return await ResponseService.ResponseCoreAsync(req, noOpResult);
         }
 
         Logger.LogInformation($"InteractionType: {interactionObject.InteractionType}");
         Logger.LogInformation($"CommandId: {interactionObject.Data?.Id ?? "<null>"}");
-        Logger.LogInformation($"CommandName: {interactionObject.Data?.Name ?? "<null>" }");
+        Logger.LogInformation($"CommandName: {interactionObject.Data?.Name ?? "<null>"}");
 
         if (interactionObject.Data == null
             || !interactionObject.Data.Name.Contains("sugoi")
             || interactionObject.Data.Options.Length == 0)
         {
-            var noOpResult = await MessageService.PongAsync(interactionObject);
+            var noOpResult = await MessageService.PongAsync();
             return await ResponseService.ResponseCoreAsync(req, noOpResult);
         }
 
         var option = interactionObject.Data.Options.FirstOrDefault();
         if (option == null)
         {
-            var noOpResult = await MessageService.PongAsync(interactionObject);
+            var noOpResult = await MessageService.PongAsync();
             return await ResponseService.ResponseCoreAsync(req, noOpResult);
         }
 
         var result = option.Name switch
         {
             "ping" => await HelloService.HelloWorldAsync(interactionObject),
-            "get-user" => await MessageService.GetUserByIdAsync(interactionObject),
-            "dappun" => await HelloService.DappunAsync(interactionObject),
+            "get-user" => await MessageService.GetUserByIdAsync(option),
+            "set-username" => await MessageService.SetUserNameAsync(option),
+            "set-username-byid" => await MessageService.SetUserNameAsync(option),
+            //"create-user" => await MessageService.CreateUserAsync(option),
+            //"delete-user" => await MessageService.DeleteUserAsync(option),
+            "get-aggregate-result" => await MessageService.GetAggregateResult(),
             _ => throw new ArgumentOutOfRangeException(nameof(option))
         };
 

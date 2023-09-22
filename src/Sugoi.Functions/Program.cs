@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sugoi.Functions.Configurations;
-using Sugoi.Functions.Services;
+using Sugoi.Functions.Services.Common;
 
 var host = new HostBuilder()
     .UseServiceProviderFactory(new AutofacServiceProviderFactory())
@@ -35,6 +35,8 @@ void ConfigureContainer(HostBuilderContext context, ContainerBuilder builder)
 
 void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 {
+    services.AddOptions();
+
     services
         .Configure<SugoiConfiguration>(context.Configuration.GetSection(SugoiConfiguration.Name));
 

@@ -50,7 +50,7 @@ public class InteractionDataOptionItem
 {
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
-    
+
     [JsonPropertyName("type")]
     public ApplicationCommandOptionTypes ApplicationCommandOptionType { get; set; }
 

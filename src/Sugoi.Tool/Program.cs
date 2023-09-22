@@ -105,12 +105,6 @@ internal class Program
                 },
                 new()
                 {
-                    ["name"] = "dappun",
-                    ["description"] = "dappun",
-                    ["type"] = 1
-                },
-                new()
-                {
                     ["name"] = "get-user",
                     ["description"] = "ユーザ情報を取得します。",
                     ["type"] = 1,
@@ -124,6 +118,90 @@ internal class Program
                             ["required"] = true
                         }
                     }
+                },
+                new()
+                {
+                    ["name"] = "set-username",
+                    ["description"] = "すごいServices におけるユーザの表示名を変更します。",
+                    ["type"] = 1,
+                    ["options"] = new Dictionary<string, object>[]
+                    {
+                        new()
+                        {
+                            ["name"] = "user",
+                            ["description"] = "設定したいユーザ",
+                            ["type"] = 6,
+                            ["required"] = true
+                        },
+                        new()
+                        {
+                            ["name"] = "name",
+                            ["description"] = "設定したい表示名",
+                            ["type"] = 3,
+                            ["required"] = true
+                        }
+                    }
+                },
+                new()
+                {
+                    ["name"] = "set-username-byid",
+                    ["description"] = "すごいServices におけるユーザの表示名を、ユーザIDを指定して変更します。",
+                    ["type"] = 1,
+                    ["options"] = new Dictionary<string, object>[]
+                    {
+                        new()
+                        {
+                            ["name"] = "user",
+                            ["description"] = "設定したいユーザのID",
+                            ["type"] = 3,
+                            ["required"] = true
+                        },
+                        new()
+                        {
+                            ["name"] = "name",
+                            ["description"] = "設定したい表示名",
+                            ["type"] = 3,
+                            ["required"] = true
+                        }
+                    }
+                },
+                new()
+                {
+                    ["name"] = "create-user",
+                    ["description"] = "ユーザ情報を作成します。",
+                    ["type"] = 1,
+                    ["options"] = new Dictionary<string, object>[]
+                    {
+                        new()
+                        {
+                            ["name"] = "user",
+                            ["description"] = "作成したいユーザ",
+                            ["type"] = 6,
+                            ["required"] = true
+                        }
+                    }
+                },
+                new()
+                {
+                    ["name"] = "delete-user",
+                    ["description"] = "ユーザ情報を削除します。",
+                    ["type"] = 1,
+                    ["options"] = new Dictionary<string, object>[]
+                    {
+                        new()
+                        {
+                            ["name"] = "user",
+                            ["description"] = "削除したいユーザ",
+                            ["type"] = 6,
+                            ["required"] = true
+                        }
+                    }
+                },
+                new()
+                {
+                    ["name"] = "get-aggregate-result",
+                    ["description"] = "最新の集計情報を表示します。",
+                    ["type"] = 1
                 }
             }
         };

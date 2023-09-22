@@ -43,4 +43,21 @@ public class Enumerations
         ApplicationCommand_AutoCompleteResult = 8,
         Modal = 9,
     }
+
+    public enum DiscordChannelTypes
+    {
+        GuildText = 0,
+        DM = 1,
+        GuildVoice = 2,
+        GroupDM = 3,
+        GuildCategory = 4,
+        GuildAnnouncement = 5,
+        AnnouncementThread = 6,
+        PublicThread = 10,
+        PrivateThread = 11,
+        GuildStageVoice = 13,
+        GuildDirectory = 14,
+        GuildForum = 15,
+        GuildMedia = 16
+    }
 }

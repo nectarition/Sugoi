@@ -1,10 +1,18 @@
-﻿namespace Sugoi.Functions.Models.Aggregates;
+﻿using Newtonsoft.Json;
+
+namespace Sugoi.Functions.Models.Aggregates;
 
 public class User
 {
+    [JsonProperty("id")]
     public string Id { get; set; } = string.Empty;
 
+    [JsonProperty("userId")]
     public string UserId { get; set; } = string.Empty;
 
-    public DateTime PostedDate { get; set; }
+    [JsonProperty("userName")]
+    public string? UserName { get; set; }
+
+    [JsonProperty("postedAt")]
+    public DateTime PostedAt { get; set; }
 }

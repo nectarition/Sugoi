@@ -191,7 +191,7 @@ public class MessageService : IMessageService
             };
         }
 
-        var prefix = "----- 最新の集計情報\n";
+        var prefix = "----- 最新の集計情報\n\n";
 
         var userMessages = users
             .OrderByDescending(u => u.PostedAt)

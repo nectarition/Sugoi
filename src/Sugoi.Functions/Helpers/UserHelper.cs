@@ -27,6 +27,6 @@ public class UserHelper
 
         var discordMessageUrl = string.Format(DiscordMessageURL, guildId, user.LastMessageChannelId, user.LastMessageId);
 
-        return $"**{user.UserName ?? "誰？"}** {discordMessageUrl} {formatedSpan}\n";
+        return $"**{user.UserName ?? "誰？"}** {formatedSpan} {discordMessageUrl}\n";
     }
 }

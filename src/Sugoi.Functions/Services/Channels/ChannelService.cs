@@ -57,8 +57,8 @@ namespace Sugoi.Functions.Services.Channels
 
         public async Task SetLastMessageIdAsync(string channelId, string? lastMessageId)
         {
-            await CosmosClient.GetContainer("SugoiCosmosDb", "Users")
-                .PatchItemAsync<Models.Aggregates.User>(channelId, new PartitionKey(channelId), new[]
+            await CosmosClient.GetContainer("SugoiCosmosDb", "Channels")
+                .PatchItemAsync<Models.Aggregates.Channel>(channelId, new PartitionKey(channelId), new[]
                 {
                     PatchOperation.Set($"/lastMessageId", lastMessageId)
                 });

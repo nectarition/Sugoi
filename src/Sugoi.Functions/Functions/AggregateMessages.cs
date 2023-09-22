@@ -47,7 +47,7 @@ public class AggregateMessages
     }
 
     [Function(nameof(AggregateCoreAsync))]
-    public async Task AggregateCoreAsync()
+    public async Task AggregateCoreAsync([ActivityTrigger] string input)
     {
         Logger.LogInformation("----- Started Aggregation");
         await AggregateService.AggregateMessages();

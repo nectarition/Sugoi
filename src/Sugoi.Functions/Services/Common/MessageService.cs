@@ -77,7 +77,7 @@ public class MessageService : IMessageService
             InteractionResponseType = InteractionResponseTypes.ChannelMessageWithSoruce,
             Data = new()
             {
-                Content = Helpers.UserHelper.FormatUser(user)
+                Content = UserHelper.FormatUser(SugoiConfiguration.Aggregates.GuildId, user)
             }
         };
     }
